@@ -92,32 +92,31 @@ def temperature():
     return jsonify(tobs_list)
 
 
-@app.route("/api/<start>")
-def calc_temps(start_date):
+@app.route("/api/<start_date>")
+def calc_temp(start_date):
     """TMIN, TAVG, and TMAX for a list of dates."""
-    result_start=session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-    filter(func.strftime("%m-%d", Measurement.date) >= start_date)
+    result_start= session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
+       filter(Measurement.date == start_date).all()
         
    
-    table = []
+    tabler = []
     for r in result_start:
-       table_dict= {}
-       table_dict["start date"] = start_date
-       table_dict["end date"] = end_date
-       table_dict["TAVE"] = float(r[0])
-       table_dict["TMAX"] = float(r[1])
-       table_dict["TMIN"] = float(r[2])
-       table.append(table_dict)
+       tabler_dict= {}
+       tabler_dict["start date"] = start_date
+       tabler_dict["TAVE"] = float(r[0])
+       tabler_dict["TMAX"] = float(r[1])
+       tabler_dict["TMIN"] = float(r[2])
+       tabler.append(tabler_dict)
         
         
-    return jsonify(table_dict)
+    return jsonify(tabler_dict)
     
 
-@app.route("/api/<start>")
-def calc_temps(start_date):
+@app.route("/api/<start_date>/<end_date>")
+def calc_temps(start_date,end_date):
     """TMIN, TAVG, and TMAX for a list of dates."""
     result_start=session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
-    filter(func.strftime("%m-%d", Measurement.date) >= start_date)
+    filter(Measurement.date >= start_date).filter(Measurement.date <= end_date).all()
         
    
     table = []
